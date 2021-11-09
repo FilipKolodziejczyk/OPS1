@@ -1,9 +1,20 @@
-all: l1solution
+CC=gcc
+C_FLAGS=-Wall -fsanitize=address,undefined
+FILES=l1solution.o l1solution_core.o l1solution_util.o
 
-l1solution: l1solution.c
-	gcc -Wall -fsanitize=address,undefined -o l1solution l1solution.c
+l1solution: ${FILES}
+	${CC} ${C_FLAGS} -o l1solution ${FILES}
+	rm -f ${FILES}
 
-.PHONY: all clean
+l1solution.o: l1solution.c l1solution.h
+	${CC} ${C_FLAGS} -o l1solution.o -c l1solution.c
 
+l1solution_core.o: l1solution_core.c l1solution.h
+	${CC} ${C_FLAGS} -o l1solution_core.o -c l1solution_core.c
+
+l1solution_util.o:	l1solution_util.c l1solution.h
+	${CC} ${C_FLAGS} -o l1solution_util.o -c l1solution_util.c
+
+.PHONY: clean
 clean:
-	rm l1solution
+	rm -f l1solution ${FILES} ${L1_DATABASE}*.entry

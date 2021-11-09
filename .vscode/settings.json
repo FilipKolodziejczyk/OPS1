@@ -1,5 +1,9 @@
 {
     "files.associations": {
-        "ftw.h": "c"
+        "ftw.h": "c",
+        "unistd.h": "c",
+        "stdlib.h": "c",
+        "stdbool.h": "c",
+        "stdio.h": "c"
     }
 }
