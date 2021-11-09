@@ -1,0 +1,6 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/kolodziejczykf/CS/SOP1'
+make: Leaving directory '/home/kolodziejczykf/CS/SOP1'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+ 
