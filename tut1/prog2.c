@@ -2,19 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXL 20
-#define MAXL2 21
-#define S_(x) #x
-#define S(x) S_(x)
 #define ERR(source) (perror(source),                                 \
                      fprintf(stderr, "%s:%d\n", __FILE__, __LINE__), \
                      exit(EXIT_FAILURE))
 
+#define MAX_STR 20
+
 int main(int argc, char **argv)
 {
-    char name[MAXL + 2];
-    scanf("%"S(MAXL2)"s", name);
-    if(strlen(name) > MAXL)
+    char name[MAX_STR + 2];
+    scanf("%21s", name); // MAX_STR + 1 = 21
+    if (strlen(name) > MAX_STR)
         ERR("Name too long");
     printf("Hello %s\n", name);
 
