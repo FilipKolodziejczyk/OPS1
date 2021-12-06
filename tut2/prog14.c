@@ -17,7 +17,7 @@ void parent_work(int k, int p, int r);
 void child_work(int r);
 void process_msg(const char *msg);
 
-void sethandler
+void sethandler;
 
 volatile last_sig = 0;
 
