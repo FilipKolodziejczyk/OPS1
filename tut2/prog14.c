@@ -5,26 +5,29 @@
 #include <time.h>
 #include <signal.h>
 #include <errno.h>
+#include <string.h>
 
 #define ERR(source) (fprintf(stderr, "%s:%d\n", __FILE__, __LINE__), \
                      perror(source),                                 \
                      kill(0, SIGKILL),                               \
                      exit(EXIT_FAILURE))
 
-int usage(const char *pname, const char *msg);
+volatile sig_atomic_t last_sig = 0;
+
+int usage(const char *msg);
 void create_children(int n, int r);
 void parent_work(int k, int p, int r);
 void child_work(int r);
 void process_msg(const char *msg);
 
-void sethandler;
-
-volatile last_sig = 0;
+void sethandler(void (*f)(int), int sig_num);
+void sig_handler(int sig_num);
+void sigchld_handler(int sig_num);
 
 int main(int argc, char **argv)
 {
     if (argc != 5)
-        usage(argv[0], "Invalid number of arguments");
+        usage("Invalid number of arguments");
 
     int n, k, p, r;
     n = atol(argv[1]);
@@ -32,7 +35,11 @@ int main(int argc, char **argv)
     p = atol(argv[3]);
     r = atol(argv[4]);
     if (n <= 0 || k <= 0 || p <= 0 || r <= 0)
-        usage(argv[0], "Invalid argument");
+        usage("Invalid argument");
+
+    sethandler(SIG_IGN, SIGUSR1);
+    sethandler(SIG_IGN, SIGUSR2);
+    sethandler(SIG_IGN, SIGCHLD);
 
     create_children(n, r);
     parent_work(k, p, r);
@@ -40,9 +47,9 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 
-int usage(const char *pname, const char *msg)
+int usage(const char *msg)
 {
-    fprintf(stderr, "USAGE(%s): %s\n", pname, msg);
+    fprintf(stderr, "USAGE: %s\n", msg);
     exit(EXIT_FAILURE);
 }
 
@@ -54,21 +61,27 @@ void create_children(int n, int r)
         if ((pid = fork()) == -1)
             ERR("fork:");
 
-        if (!pid)
+        if (pid == 0)
         {
-            sethan
             child_work(r);
             exit(EXIT_SUCCESS);
         }
-
-
     }
 }
 
 void parent_work(int k, int p, int r)
 {
-    while (waitpid(0, NULL, WNOHANG) >= 0)
+    pid_t pid;
+    while (1)
     {
+        while ((pid = waitpid(0, NULL, WNOHANG)) > 0)
+            ;
+        if (pid < 0)
+        {
+            if (errno != ECHILD)
+                ERR("waitpid");
+            break;
+        }
         sleep(k);
         if (kill(0, SIGUSR1) == -1)
             ERR("kill: ");
@@ -76,11 +89,16 @@ void parent_work(int k, int p, int r)
         if (kill(0, SIGUSR2) == -1)
             ERR("kill: ");
     }
+    if (errno != ECHILD)
+        ERR("waitpid");
     process_msg("Parent terminates");
 }
 
 void child_work(int r)
 {
+    sethandler(sig_handler, SIGUSR1);
+    sethandler(sig_handler, SIGUSR2);
+
     srand(time(NULL) * getpid());
     int start_time = rand() % 6 + 5;
 
@@ -100,4 +118,18 @@ void child_work(int r)
 void process_msg(const char *msg)
 {
     printf("[%d]%s\n", getpid(), msg);
+}
+
+void sethandler(void (*f)(int), int sug_num)
+{
+    struct sigaction act;
+    memset(&act, 0, sizeof(struct sigaction));
+    act.sa_handler = f;
+    if (-1 == sigaction(sug_num, &act, NULL))
+        ERR("sigaction");
+}
+
+void sig_handler(int sig_num)
+{
+    last_sig = sig_num;
 }
