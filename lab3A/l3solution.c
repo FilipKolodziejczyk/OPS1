@@ -23,7 +23,8 @@ int main(int argc, char **argv)
 void *judge_work(void *arg_ptr)
 {
     int *T_ptr = (int *)arg_ptr;
-    unsigned short xsubi[3] = {time(NULL)};
+    unsigned short xsubi[3];
+   // = {time(NULL)};
     pthread_t competitor_tid[NUM_OF_COMPETITORS];
     int L = 0;
     pthread_mutex_t mxL = PTHREAD_MUTEX_INITIALIZER;
