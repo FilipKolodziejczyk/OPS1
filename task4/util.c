@@ -55,7 +55,7 @@ void open_files(char *dirname, int fd[], int *files_opened, int max_fd, int max_
         ERR("closedir");
 }
 
-void aiocb_init(struct aiocb *aiocb, char *buf, int filedes, size_t bufsize, off_t offset, void *fun(union sigval))
+void aiocb_init(struct aiocb *aiocb, char *buf, int filedes, size_t bufsize, off_t offset, void (*fun)(union sigval))
 {
     memset(aiocb, 0, sizeof *aiocb);
     aiocb->aio_fildes = filedes;
@@ -68,7 +68,8 @@ void aiocb_init(struct aiocb *aiocb, char *buf, int filedes, size_t bufsize, off
     else
     {
         aiocb->aio_sigevent.sigev_notify = SIGEV_THREAD;
-        aiocb->aio_sigevent.sigev_value.sival_ptr = fun;
+        aiocb->aio_sigevent.sigev_notify_function = fun;
+        aiocb->aio_sigevent.sigev_notify_attributes = NULL;
     }
 }
 
@@ -92,6 +93,15 @@ void sethandler(void (*f)(int), int sig_num)
     struct sigaction sig_act;
     memset(&sig_act, 0, sizeof(struct sigaction));
     sig_act.sa_handler = f;
-    if (-1 == sigaction(sig_num, &sig_act, NULL))
+    if (0 != sigaction(sig_num, &sig_act, NULL))
         ERR("sigaction");
+}
+
+void set_sigmask(int sig_num)
+{
+    sigset_t new_mask;
+    sigemptyset(&new_mask);
+    sigaddset(&new_mask, sig_num);
+    if (pthread_sigmask(SIG_BLOCK, &new_mask, NULL) != 0)
+        ERR("pthread_sigmask");
 }
