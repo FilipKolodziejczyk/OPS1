@@ -14,4 +14,4 @@ l1solution_util.o: l1solution_util.c l1solution.h
 
 .PHONY: clean
 clean:
-	rm -f l1solution ${FILES}
+	rm -rf l1solution ${FILES}
