@@ -53,3 +53,6 @@ dkms.conf
 
 # VS Code
 .vscode/
+
+# Description files (University's property)
+*.jpg
