@@ -1,17 +1,9 @@
 CC=gcc
-C_FLAGS=-Wall -fsanitize=address,undefined -Wno-unused-variable
-FILES=l1solution.o l1solution_util.o
+C_FLAGS=-Wall -fsanitize=address,undefined
 
-l1solution: ${FILES}
-	${CC} ${C_FLAGS} -o l1solution ${FILES}
-	rm -f ${FILES}
-
-l1solution.o: l1solution.c l1solution.h
-	${CC} ${C_FLAGS} -o l1solution.o -c l1solution.c
-
-l1solution_util.o: l1solution_util.c l1solution.h
-	${CC} ${C_FLAGS} -o l1solution_util.o -c l1solution_util.c
+largest_file: largest_file.c
+	${CC} ${C_FLAGS} -o largest_file.out largest_file.c
 
 .PHONY: clean
 clean:
-	rm -rf l1solution ${FILES}
+	rm -rf largest_file.out ${L1_LOGFILE}
