@@ -56,3 +56,12 @@ dkms.conf
 
 # Description files (University's property)
 *.jpg
+
+# Clion
+/.idea/shelf/
+/.idea/workspace.xml
+# Editor-based HTTP Client requests
+/.idea/httpRequests/
+# Datasource local storage ignored files
+/.idea/dataSources/
+/.idea/dataSources.local.xml
