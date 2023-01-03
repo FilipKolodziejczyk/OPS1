@@ -15,6 +15,7 @@ void usage(char *filename) {
     printf("sb - size of buffers in aio control blocks\n");
     printf("msg? - name/path of the file containing encrypted message\n");
     printf("key? - name/path of the file containing key used to encrypt the relevant (same number) message\n");
+    exit(EXIT_FAILURE);
 }
 
 int main(int argc, char **argv) {
