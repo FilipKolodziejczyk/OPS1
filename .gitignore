@@ -65,3 +65,10 @@ dkms.conf
 # Datasource local storage ignored files
 /.idea/dataSources/
 /.idea/dataSources.local.xml
+
+# Tutorial 4
+tutorial4/msg?
+tutorial4/key?
+tutorial4/out?
+tutorial4/tutorial4-step?
+
